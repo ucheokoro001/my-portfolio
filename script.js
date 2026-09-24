@@ -1,76 +1,65 @@
-// =========================
-// MOBILE MENU
-// =========================
+const WA_NUMBER="2349128685771";
 
-const menuBtn = document.getElementById("menuBtn");
-const navLinks = document.getElementById("navLinks");
+const menuToggle=document.getElementById("menuToggle");
+const nav=document.getElementById("nav");
 
+menuToggle.addEventListener("click",()=>nav.classList.toggle("open"));
+document.querySelectorAll(".nav a").forEach(a=>a.addEventListener("click",()=>nav.classList.remove("open")));
 
-// OPEN / CLOSE MENU
-
-menuBtn.addEventListener("click", function (event) {
-
-    event.stopPropagation();
-
-    navLinks.classList.toggle("active");
-
+const progress=document.querySelector(".progress");
+window.addEventListener("scroll",()=>{
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  progress.style.width=(max>0?(window.scrollY/max)*100:0)+"%";
 });
 
-
-// CLOSE MENU WHEN CLICKING A LINK
-
-const links = document.querySelectorAll(".nav-links a");
-
-links.forEach(function (link) {
-
-    link.addEventListener("click", function () {
-
-        navLinks.classList.remove("active");
-
-    });
-
-});
-
-
-// CLOSE MENU WHEN CLICKING OUTSIDE
-
-document.addEventListener("click", function (event) {
-
-    const clickedInsideMenu =
-        navLinks.contains(event.target);
-
-    const clickedMenuButton =
-        menuBtn.contains(event.target);
-
-
-    if (
-        !clickedInsideMenu &&
-        !clickedMenuButton
-    ) {
-
-        navLinks.classList.remove("active");
-
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add("show");
+      observer.unobserve(entry.target);
     }
+  });
+},{threshold:.12});
 
+document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
+
+const form=document.getElementById("projectForm");
+const formMessage=document.getElementById("formMessage");
+
+form.addEventListener("submit",e=>{
+  e.preventDefault();
+
+  const name=document.getElementById("clientName").value.trim();
+  const contact=document.getElementById("clientContact").value.trim();
+  const description=document.getElementById("projectDescription").value.trim();
+  const budget=document.getElementById("budget").value.trim();
+  const deadline=document.getElementById("deadline").value.trim();
+
+  if(!name||!description){
+    formMessage.textContent="Please enter your name and describe what you want built.";
+    return;
+  }
+
+  const message=`Hello Uche 👋
+
+I would like to discuss a project with you.
+
+👤 Name:
+${name}
+
+📱 WhatsApp / Email:
+${contact||"Not provided"}
+
+💻 What I want:
+${description}
+
+💰 Budget:
+${budget||"Not provided"}
+
+📅 Deadline:
+${deadline||"Not provided"}
+
+I found you through your portfolio.`;
+
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`,"_blank");
 });
-
-
-// =========================
-// PROJECT BUTTONS
-// =========================
-
-function openProject() {
-
-    window.open(
-        "taste-haven/index.html",
-        "_blank"
-    );
-
-}
-
-
-function showComingSoon(button) {
-    button.textContent = "Coming Soon";
-    button.disabled = true;
-    button.style.cursor = "default";
-}
